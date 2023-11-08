@@ -1,0 +1,205 @@
+package gui;
+import models.User;
+
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import data.JobTable;
+import data.UserTable;
+
+public class NormalUser extends JFrame implements ActionListener {
+
+	private JLabel lblUsuario;
+	private JComboBox<String> cmbUsuarios;
+	private JLabel lblEstadoUsuario;
+	private JPanel panel0;
+	
+	private JButton btnActivar;
+	private JButton btnDesactivar;
+	private JButton btnCrear;
+	private JPanel panel1;
+	
+	private JTextArea textArea;
+	private JScrollPane scrollPane;
+	private JPanel panel2;
+	
+	private Container contenedor = getContentPane();
+	
+	private UserTable utable = new UserTable();
+	private JobTable jtable = new JobTable();
+	
+	
+	//	CONSTRUCTOR	
+	
+	public NormalUser(){ // inicializando y seteando los componentes		
+		
+		addComponents();
+		
+		cmbUsuarios.addActionListener(this);
+		btnActivar.addActionListener(this);
+		btnDesactivar.addActionListener(this);
+		btnCrear.addActionListener(this);
+
+		
+		// seteando propieades de la ventana
+		setTitle("Ventana Administrador");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		setSize(500, 400);
+		setResizable(false);
+		setLocationRelativeTo(null); // sirve para centrar el form en la pantalla
+		
+	}
+
+
+//	METHODS
+	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			if (e.getSource() == cmbUsuarios) {
+				
+				Object obj = cmbUsuarios.getSelectedItem();
+				
+				String nombre = obj.toString();
+				
+				User u = utable.searchUser(nombre);
+				
+				String estado = u.getStatus();
+				
+				lblEstadoUsuario.setText(estado); 
+			}
+			
+			if (e.getSource() == btnActivar) {
+							
+				Object obj = cmbUsuarios.getSelectedItem();
+				
+				String nombre = obj.toString();
+				
+				utable.updateUserStatus(nombre, "ACTIVADO");
+				
+				User u = utable.searchUser(nombre);
+							
+				String estado = u.getStatus();
+				
+				lblEstadoUsuario.setText(estado); 
+			}
+			
+			if (e.getSource() == btnDesactivar) {
+							
+				Object obj = cmbUsuarios.getSelectedItem();
+				
+				String nombre = obj.toString();
+				
+				utable.updateUserStatus(nombre, "DESACTIVADO");
+				
+				User u = utable.searchUser(nombre);
+							
+				String estado = u.getStatus();
+				
+				lblEstadoUsuario.setText(estado);
+			}
+			
+			if (e.getSource() == btnCrear) {
+				
+				while (true) {
+					
+					String nombre = JOptionPane.showInputDialog("Ingresar el nombre: ");
+					
+					if (nombre == null) {
+						break;
+					}
+					
+					User u = utable.searchUser(nombre);
+					
+					if ( u != null) {
+						JOptionPane.showMessageDialog(null, "El usuario ya existe.","MENSAJE",JOptionPane.INFORMATION_MESSAGE);
+						break;
+					}
+					
+					String password = JOptionPane.showInputDialog("Ingresar la contraseña: ");
+					
+					if (password == null) {
+						break;
+					}
+					
+					int esAdmin = JOptionPane.showOptionDialog( 
+							null,
+							"Es administrador? ", 
+							"Opciones",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							new Object[] { "SI", "NO"}, 
+							"NO");
+					
+					String role = esAdmin == 0 ? "administrador" : "normal";
+			        String status = "ACTIVADO";
+			        
+					
+					
+					if (esAdmin < 0) {
+						break;
+					}
+					else {
+						
+						u = utable.searchUser(nombre);
+						
+						if ( u == null) {
+							utable.createUser(nombre, password, role, status);
+							cmbUsuarios.addItem(nombre);
+							break;
+						}
+						else {
+							JOptionPane.showMessageDialog(null, "El usuario ya existe.","MENSAJE",JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+				}			
+				
+				
+			}
+		}
+		
+		public void addComponents() {
+			
+			contenedor.setLayout(new FlowLayout());
+			
+			lblUsuario = new JLabel("Usuario: ");
+			cmbUsuarios = new JComboBox<String>( utable.getNombreDeUsuarios() );
+			lblEstadoUsuario = new JLabel();
+			lblEstadoUsuario.setPreferredSize(new Dimension(100, 20));
+			panel0 = new JPanel();
+			panel0.add(lblUsuario);
+			panel0.add(cmbUsuarios);
+			panel0.add(lblEstadoUsuario);
+			contenedor.add(panel0);
+			
+			btnActivar = new JButton("Activar Usuario");
+			btnDesactivar = new JButton("Desactivar Usuario");
+			btnCrear = new JButton("Nuevo Usuario");
+			panel1 = new JPanel();
+			panel1.add(btnActivar);
+			panel1.add(btnDesactivar);
+			panel1.add(btnCrear);
+			contenedor.add(panel1);
+					
+			textArea = new JTextArea();
+			scrollPane = new JScrollPane(textArea);
+			scrollPane.setPreferredSize(new Dimension(400,200));
+			panel2 = new JPanel();
+			panel2.add(scrollPane);
+			contenedor.add(panel2);		
+		}
+		
+}
