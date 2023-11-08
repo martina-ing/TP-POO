@@ -1,0 +1,126 @@
+package data;
+import models.*;
+
+
+public class UserTable {			
+	
+		private User[] arrUsers = new User[10];
+	
+		//	CONSTRUCTOR
+		
+		public UserTable() {			
+			for (int i=0; i < arrUsers.length; i++) {
+				arrUsers[i] = null;
+			}
+			
+			arrUsers[0] = new User("admin","admin","administrador", "ACTIVADO");
+			arrUsers[1] = new User("jose", "7890","normal", "ACTIVADO");
+			arrUsers[2] = new User("juana", "1234","normal", "DESACTIVADO");
+			arrUsers[3] = new User("marta", "mar0","normal", "ACTIVADO");
+		}
+		
+	
+		//	METHODS
+		//-----------------------------
+		
+		
+		// CREATE USER	    
+		public void createUser(String name, String password, String role) {
+	        for (int i = 0; i < arrUsers.length; i++) {
+	            if (arrUsers[i] == null) {
+	                arrUsers[i] = new User(name, password,role, "ACTIVADO");
+	                break;
+	            }
+	        }
+	    }
+		
+		//
+		public User[] readUsers(){
+			int n = getNumeroDeUsuarios();
+			User[] U = new User[n];
+			for (int i=0 ; i<arrUsers.length; i++) {
+				if(arrUsers[i]!=null) {
+					U[i]=arrUsers[i];
+				}
+			}
+			return U;
+		}
+		// SEARCH USER	    
+		public User searchUser(String name) {
+			for (int i = 0; i < arrUsers.length; i++) {
+				User usu = arrUsers[i];
+				if (usu != null) {
+			       if (name.equals(usu.getName())) {
+			                 return usu;
+			            }
+			        }
+			    }
+				return null;
+		}
+	
+
+	    // UPDATE USER STATUS
+	    public void updateUserStatus(String name, String status) {
+	    	 for (User user : arrUsers) {
+	             if (user != null && user.getName().equals(name)) {
+	                 user.setStatus(status);
+	                 break;
+	             }
+	         }
+	    }
+
+	   
+	    // CHANGE JOB STATUS
+	    public void changeJobStatus(Jobs job, String status) {
+	        job.setStatus(status);
+	    }
+	    
+	    
+	    
+	    
+	    
+	    public User validateUser(String nombre, String password) {
+			
+			User u = searchUser(nombre);
+			
+			if (u != null) {// si existe el nombre de usuario
+			
+				if (password.equals(u.getPassword())) {// si es usuario valido
+				
+					return u;
+				}
+				
+			}
+
+			return null;
+		}// fin validarUsuario
+	    
+	    
+	    public int getNumeroDeUsuarios() {
+			
+			int numero = 0;
+			
+			for (int n=0; n < arrUsers.length; n++) {
+				
+				User u = arrUsers[n];
+				
+				if (u != null) { numero++;}
+			}
+			
+			return numero;
+		}
+		
+		public String[] getNombreDeUsuarios() {
+			
+			int n = getNumeroDeUsuarios();
+			
+			String[] array = new String[n]; 
+			
+			for (int i=0; i < n; i++) {
+				
+				array[i] = arrUsers[i].getName();
+			}
+			
+			return array;
+		}
+}	    
