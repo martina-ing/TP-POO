@@ -1,0 +1,47 @@
+package models;
+
+public class User {
+
+		//ATRIBUTES 
+	
+		private String name;
+		private String password;
+		private String role;
+		private String status;
+		
+		
+		// CONSTRUCTOR
+
+		public User (String nombre, String password, String role, String status) {
+			this.name = nombre;
+			this.password = password;
+			this.role = role;
+			this.status = status;
+		}
+		
+
+		//	GETTERS
+
+		public String getName(){
+			return this.name;
+		}
+		
+		public String getPassword(){
+			return this.password;
+		}
+		
+		public String getLevel() {
+			return this.role;
+		}
+		
+		public String getStatus() {
+			return this.status;
+		}
+		
+		
+		//SETTERS
+		public void setStatus(String status){
+			this.status = status;
+		}
+
+}
