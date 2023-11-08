@@ -1,0 +1,141 @@
+package gui;
+
+import data.*;
+import models.User;
+
+import javax.swing.*;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Login extends JFrame implements ActionListener {
+		
+		
+	//	ATRIBUTOS	
+		
+	private JLabel lblTitulo;
+	private JPanel panel0;
+		
+	private JLabel lblUser;
+	private JTextField txtUser;
+	private JPanel panel1;
+		
+	private JLabel lblPassword;
+	private JPasswordField txtPassword;
+	private JPanel panel2;
+		
+	private JButton btnBorrar;
+	private JButton btnAceptar;
+	private JPanel panel3;
+		
+	private Container contenedor = getContentPane();
+		
+	//CONSTRUCTOR
+		
+		 
+	public Login(){ // inicializando y seteando los componentes
+					
+		addComponents();
+
+		// agregando un actionListener al boton borrar 
+		btnBorrar.addActionListener(this);
+			
+		// agregando un actionListener al boton aceptar
+		btnAceptar.addActionListener(this);
+			
+		// seteando propieades de la ventana
+		setTitle("Login");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		setSize(250, 200);
+		setResizable(false);
+		setLocationRelativeTo(null); // sirve para centrar el form en la pantalla
+			
+	}// fin constructor
+		
+	//	METHODS	
+
+	@Override 
+	public void actionPerformed (ActionEvent e) { // implementando el metodo actionPerformed de la interfaz ActionListener
+			
+		if (e.getSource() == btnBorrar) {// boton borrar
+			txtUser.setText("");
+			txtPassword.setText("");
+		}
+			
+		if (e.getSource() == btnAceptar) { // boton aceptar
+						
+			String inputUsuario = txtUser.getText();
+			String inputPassword = String.valueOf(txtPassword.getPassword());
+				
+			UserTable tabla = new UserTable();
+				
+			User u = tabla.validateUser(inputUsuario, inputPassword);
+				
+			if (u == null) {
+				JOptionPane.showMessageDialog(null, "Usuario no valido.","ERROR",JOptionPane.ERROR_MESSAGE);
+			}	
+			else {
+				JOptionPane.showMessageDialog(null, "Usuario valido.","MENSAJE",JOptionPane.INFORMATION_MESSAGE);
+					
+				JFrame gui;
+					
+				if (esAdmin(u)) {
+					gui = new AdminUser();
+				}else {
+					gui = new NormalUser();
+				}
+					
+				dispose();
+					
+				gui.setVisible(true);		
+			}
+					
+		}
+			
+	}// fin actionPerformed
+		
+	private void addComponents() {		
+		lblTitulo = new JLabel("Login");
+		panel0 = new JPanel();
+			
+		lblUser = new JLabel("Usuario: ");
+		txtUser = new JTextField(10);
+		panel1 = new JPanel();
+		
+		lblPassword = new JLabel("Contraseña: ");
+		txtPassword = new JPasswordField(10);
+		panel2 = new JPanel();
+			
+		btnBorrar = new JButton("Borrar");
+		btnAceptar = new JButton("Aceptar");
+			panel3 = new JPanel();
+			
+		contenedor.setLayout(new GridLayout(4,1));
+			
+		Font f = new Font("Arial Bold", Font.PLAIN, 20);
+		lblTitulo.setFont(f);
+		panel0.add(lblTitulo);
+		contenedor.add(panel0);
+			
+		panel1.add(lblUser);
+		panel1.add(txtUser);
+		contenedor.add(panel1);
+			
+		panel2.add(lblPassword);
+		panel2.add(txtPassword);
+		contenedor.add(panel2);
+			
+		panel3.add(btnBorrar);
+		panel3.add(btnAceptar);
+		contenedor.add(panel3);
+	}
+		
+	private boolean esAdmin(User u) {
+		return u.getLevel() == "administrador";
+	}
+		
+}// finClase
+
+
