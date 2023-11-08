@@ -1,0 +1,79 @@
+package models;
+
+public class Jobs {
+
+
+	//	ATRIBUTES
+
+	
+	private String usuarioEncargado;
+	private String status;
+	private int cantidadDeCopias;
+	private String calidadDeCopias;
+	private String fechaEntrada;
+	private String fechaTerminado;
+	private String fechaEntrega;
+	private String nombredeltrabajo;
+	
+
+	//	CONSTRUCTOR
+
+	public Jobs ( String nombredeltrabajo, String usuarioEncargado, String status, int cantidadDeCopias, String calidadDeCopias, String fechaEntrada, String fechaTerminado, String fechaEntrega) 
+	{
+	
+		this.usuarioEncargado = usuarioEncargado;
+		this.status = status;
+		this.cantidadDeCopias = cantidadDeCopias;
+		this.calidadDeCopias = calidadDeCopias;
+		this.fechaEntrada = fechaEntrada;
+		this.fechaTerminado = fechaTerminado;
+		this.fechaEntrega = fechaEntrega;
+		this.nombredeltrabajo = nombredeltrabajo;
+	}
+	
+
+	/// GETTERS
+    
+    public String getUsuarioEncargado() {
+        return usuarioEncargado;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getCantidadDeCopias() {
+        return cantidadDeCopias;
+    }
+
+    public String getCalidadDeCopias() {
+        return calidadDeCopias;
+    }
+
+    public String getFechaEntrada() {
+        return fechaEntrada;
+    }
+
+    public String getFechaTerminado() {
+        return fechaTerminado;
+    }
+
+    public String getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    
+    
+    // SETTERS
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setFechaTerminado(String fechaTerminado) {
+        this.fechaTerminado = fechaTerminado;
+    }
+
+    public void setFechaEntrega(String fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+}
