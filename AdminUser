@@ -1,0 +1,353 @@
+package gui;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import data.*;
+import models.*;
+
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class AdminUser extends JFrame {
+
+    //----------------------
+    //  ATRIBUTOS
+    //----------------------
+    private JPanel panel0;
+    private JButton btnCrearUsuario; 
+    private JButton btnActivarUsuario; 
+    private JButton btnDesactivarUsuario; 
+    
+    private JPanel panel1;
+    private JComboBox<String> cmbUsuarios;        
+    private JComboBox<String> cmbEstado;
+    private JButton btnActualizarLista;
+
+    private JPanel panel2;
+    private DefaultListModel<String> modeloListaTrabajos;
+    private JList<String> listaTrabajos;
+    private JScrollPane scroll2;
+
+    private JPanel panel3;
+    private JTextArea textArea;
+    private JScrollPane scroll3;
+    
+    private JPanel panel4;
+    private JButton btnCambiarEstado;
+
+    private Container contenedor = this.getContentPane();
+
+    private UserTable Utable = new UserTable();
+    private JobTable Jtable = new JobTable();
+
+    //-----------------------
+    //  CONSTRUCTOR
+    //-----------------------   
+    public AdminUser() {
+        // Configura el  diseño del JFrame
+        setTitle("Administrador");
+        setLayout(new FlowLayout());
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        // Panel para botones de administración de usuarios
+        panel0 = new JPanel();
+        btnCrearUsuario = new JButton("Crear Usuario");
+        btnActivarUsuario = new JButton("Activar Usuario");
+        btnDesactivarUsuario = new JButton("Desactivar Usuario");
+        panel0.add(btnCrearUsuario);
+        panel0.add(btnActivarUsuario);
+        panel0.add(btnDesactivarUsuario);
+
+        // Panel para filtrar la lista
+        panel1 = new JPanel();
+        cmbUsuarios = new JComboBox<String>();
+        cmbUsuarios.addItem("Todos");
+        User[] arrayUsuarios = Utable.readUsers();
+        for (User usuario : arrayUsuarios) {
+            cmbUsuarios.addItem(usuario.getName());
+        }
+        String[] estadosPosibles = {"Todos", "Pendiente", "Recibido", "En Ejecución", "Terminado", "Entregado"};
+        cmbEstado = new JComboBox<String>(estadosPosibles);
+        btnActualizarLista = new JButton("Actualizar listado");
+        panel1.add(new JLabel("Usuario: "));
+        panel1.add(cmbUsuarios);
+        panel1.add(new JLabel("Estado: "));
+        panel1.add(cmbEstado);
+        panel1.add(btnActualizarLista);
+
+        // Panel para el listado de trabajos
+        panel2 = new JPanel();
+        panel2.setPreferredSize(new Dimension(175, 150));
+        modeloListaTrabajos = new DefaultListModel<>();
+        listaTrabajos = new JList<>(modeloListaTrabajos);
+        scroll2 = new JScrollPane(listaTrabajos);
+        scroll2.setPreferredSize(new Dimension(150, 125));
+        panel2.add(scroll2);
+        
+        // Panel para el TextArea
+        panel3 = new JPanel();
+        textArea = new JTextArea(8,25);
+        textArea.setEditable(false);
+        scroll3 = new JScrollPane(textArea);
+        panel3.add(scroll3);
+
+        // Panel para cambiar el estado de trabajo
+        panel4 = new JPanel();
+        btnCambiarEstado = new JButton("Cambiar Estado");
+        panel4.add(btnCambiarEstado);
+
+        // Agregar paneles al JFrame
+        contenedor.add(panel0);
+        contenedor.add(panel1);
+        contenedor.add(panel2);
+        contenedor.add(panel3);
+        contenedor.add(panel4);
+
+        // 
+        btnCrearUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                crearNuevoUsuario();
+            }
+        });
+
+        btnActivarUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                activarUsuario();
+            }
+        });
+
+        btnDesactivarUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                desactivarUsuario();
+            }
+        });
+
+        btnCambiarEstado.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                String trabajoSeleccionado = (String) listaTrabajos.getSelectedValue();
+
+                int OPCION = JOptionPane.showConfirmDialog(null, "¿Quiere cambiar el estado del trabajo con nombre"+trabajoSeleccionado+" ?", "Pregunta", JOptionPane.YES_NO_OPTION);
+
+                if (OPCION == JOptionPane.YES_OPTION) {
+                    // El usuario seleccionó "Sí"
+                    
+                    String[] opciones = {"Pendiente", "Recibido", "En Ejecución", "Terminado","Entregado"};
+        
+                    JComboBox<String> comboBox = new JComboBox<String>(opciones);
+                    
+                    int seleccion = JOptionPane.showOptionDialog(null, comboBox, "Seleccione una opción",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                    
+                    if (seleccion == JOptionPane.OK_OPTION) {
+                        String nuevoEstado = (String) comboBox.getSelectedItem();
+                        cambiarEstado(trabajoSeleccionado, nuevoEstado);
+                        JOptionPane.showMessageDialog(null, "Se ha cambiado el estado del trabajo.");
+                    }
+                }
+            }
+        });
+
+        btnActualizarLista.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                
+                String valorCombo1 = (String) cmbUsuarios.getSelectedItem();
+                
+                String valorCombo2 = (String) cmbEstado.getSelectedItem();
+                
+                actulizarLista(valorCombo1, valorCombo2);
+            }
+        });
+
+        listaTrabajos.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                String elementoSelecionado = (String) listaTrabajos.getSelectedValue();
+
+                if (elementoSelecionado != null){
+                    actualizarTextArea(elementoSelecionado);
+                }
+            }
+        });
+    }
+
+    //----------------------
+    // METODOS
+    //----------------------
+    private void crearNuevoUsuario(){
+		// PEDIR NOMBRE Y VALIDAR QUE NO EXISTE EL USUARIO
+		String nombre = JOptionPane.showInputDialog("Ingresar nombre del nuevo usuario: ");
+
+		if (nombre == null || nombre.equals("")) {
+			return;
+		}
+
+		User u = Utable.searchUser(nombre);
+
+		if (!(u == null)) {
+			JOptionPane.showMessageDialog(null, "El usuario ya existe.", "MENSAJE", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		// PEDIR PASSWORD Y VALIDAR EL INGRESO
+		String password = JOptionPane.showInputDialog("Ingresar la contraseña: ");
+
+		if (password == null || password.equals("")) {
+			return;
+		}
+        
+        // PEDIR EL NIVEL DE USUARIO Y VALIDAR LA OPCION SELECCIONADA
+		int esAdmin = JOptionPane.showOptionDialog(this,
+                        "Es administrador? ",
+						"Opciones",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+						null,
+						new Object[] { "SI", "NO" },
+						"NO");
+
+		if (esAdmin < 0) {
+			return;
+		} else {// CREAR UN NUEVO USUARIO
+            
+            String role = "";
+
+		    if (esAdmin == 0) {
+			    role = "administrador";
+		    } else{
+			    role = "normal";
+		    }
+
+		    Utable.createUser(nombre, password, role);
+			cmbUsuarios.addItem(nombre);
+			JOptionPane.showMessageDialog(null, "Se agregó el usuario " + nombre, "MENSAJE", JOptionPane.INFORMATION_MESSAGE);
+		}
+    }
+
+    private void activarUsuario(){
+
+        String[] array = Utable.getNombreDeUsuarios();
+
+        Object seleccion = JOptionPane.showInputDialog(this,
+                                            "Seleccione un usuario",
+                                            "Activar Usuario",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, // null para icono defecto
+                                            array, 
+                                            array[0]);
+    
+        if (seleccion == null){
+            return;
+        }
+
+        String nombreUsuario = (String) seleccion;
+
+        User u = Utable.searchUser(nombreUsuario);
+
+        u.setStatus("ACTIVADO");
+
+        JOptionPane.showMessageDialog(this, "Se activó el usuario con el nombre: "+u.getName(),"MENSAJE", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void desactivarUsuario(){
+
+        String[] array = Utable.getNombreDeUsuarios();
+
+        Object seleccion = JOptionPane.showInputDialog(this,
+                                            "Seleccione un usuario",
+                                            "Desactivar Usuario",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, // null para icono defecto
+                                            array, 
+                                            array[0]);
+    
+        if (seleccion == null){
+            return;
+        }
+
+        String nombreUsuario = (String) seleccion;
+
+        User u = Utable.searchUser(nombreUsuario);
+
+        u.setStatus("DESACTIVADO");
+
+        JOptionPane.showMessageDialog(this, "Se desactivó el usuario con el nombre: "+u.getName(),"MENSAJE", JOptionPane.INFORMATION_MESSAGE);    
+    }
+
+    private void actulizarLista(String usuario, String estado){
+        
+        // Borrar elementos de la lista             
+        modeloListaTrabajos.clear();
+
+        // Agregar nuevos elementos a la lista
+        
+        Jobs[] array = Jtable.crearTrabajo(); 
+
+        if (usuario == "Todos" && estado == "Todos"){
+            for (int i=0; i < array.length; i++){
+                modeloListaTrabajos.addElement(array[i].getNombreTrabajo());
+            }
+        }
+        else if (usuario == "Todos" && estado != "Todos"){
+            for (int i=0; i < array.length; i++){
+                
+                if (array[i].getStatus() == estado){
+                    modeloListaTrabajos.addElement(array[i].getNombreTrabajo());
+                }
+            }
+        }
+        else if (usuario != "Todos" && estado == "Todos"){
+            for (int i=0; i < array.length; i++){
+                
+                if (array[i].getUsuarioEncargado() == usuario){
+                    modeloListaTrabajos.addElement(array[i].getNombreTrabajo());
+                }
+            }
+        }else{
+            for (int i=0; i < array.length; i++){
+                
+                if (array[i].getUsuarioEncargado() == usuario && array[i].getStatus() == estado){
+                    modeloListaTrabajos.addElement(array[i].getNombreTrabajo());
+                }
+            }
+        }
+        
+        // Actualiza la vista de la lista
+        listaTrabajos.updateUI();
+
+        //Borrar textArea
+        textArea.setText("");
+    }
+
+    private void actualizarTextArea(String nombreTrabajo){
+
+        Jobs t = Jtable.leerTrabajo(nombreTrabajo);
+
+        if ( t != null){
+           
+            //textArea.setText("Trabajo: "+t.getNombreTrabajo());
+            textArea.append("\nUsuario: "+t.getUsuarioEncargado());
+            textArea.append("\nEstado: "+t.getStatus());
+            textArea.append("\nCalidad de copias: "+t.getCalidadDeCopias());
+            textArea.append("\nNúmero de copias: "+t.getCantidadDeCopias());
+            textArea.append("\nFecha entrada: "+t.getFechaEntrada());
+            textArea.append("\nFecha terminado: "+t.getFechaTerminado());
+            textArea.append("\nFecha entregado: "+t.getFechaTerminado());
+        }
+    }
+
+    private void cambiarEstado(String trabajoSeleccionado, String nuevoEstado){
+    	Jobs t = Jtable.leerTrabajo(trabajoSeleccionado);
+        t.setStatus(nuevoEstado);
+    }
+
+
+}
+
+
