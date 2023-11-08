@@ -1,0 +1,186 @@
+package data;
+import models.*;
+
+public class JobTable {
+
+
+	private Jobs[] arrJobs = new Jobs[20];
+		
+		
+	//	CONSTRUCTOR
+
+	public JobTable () {
+			
+		for (int i=0; i < arrJobs.length; i++) {
+			arrJobs[i] = null;
+		}
+					
+		arrJobs[0] = new Jobs("","marta", "recibido", 5, "blanco y negro", "20 OCT 2023", null, null);
+		arrJobs[1] = new Jobs("","marta","terminado", 2, "a color", "15 OCT 2023", "18 OCT 2023", null);
+		arrJobs[2] = new Jobs("", "jose","entregado", 10, "blanco y negro", "10 SEPT 2023", "20 SEPT 2023", "5 OCT 2023");
+		arrJobs[3] = new Jobs("", "juana","recibido", 7, "a color", "17 OCT 2023", null, null);
+		arrJobs[4] = new Jobs("", "juana","entregado", 3, "blanco y negro", "9 OCT 2023", "16 OCT 2023", "20 OCT 2023");
+		arrJobs[5] = new Jobs("", "marta","en ejecución", 30, "a color", "10 OCT 2023", null, null);
+	}
+	
+		
+	
+	//METHODS 
+	 
+	// Método para ver la lista de trabajos en una etapa específica
+	    public void printJobsInStage(String stage) {
+	        for (Jobs job : arrJobs) {
+	            if (job != null && job.getStatus().equals(stage)) {
+	           
+	                System.out.println("Usuario encargado: " + job.getUsuarioEncargado());
+	                System.out.println("Cantidad de copias: " + job.getCantidadDeCopias());
+	                System.out.println("Calidad de copia: " + job.getCalidadDeCopias());
+	                System.out.println("Estado: " + job.getStatus());
+	                System.out.println("Fecha de entrada: " + job.getFechaEntrada());
+	                System.out.println("Fecha de terminado: " + job.getFechaTerminado());
+	                System.out.println("Fecha de entrega: " + job.getFechaEntrega());
+	                System.out.println("--------------------");
+	            }
+	        }
+	    }
+	 
+	//LISTADO DE TRABAJOS POR USUARIO		
+	 public Jobs[] getTrabajos_x_usuario(String nombre) {
+			
+		Jobs[] trabajos = new Jobs[20];
+			
+		for (int i=0; i < trabajos.length; i++) { 
+			trabajos[i] = null; } // llenamos el arreglo con valores null
+			
+		for (int i=0; i < arrJobs.length; i++) {
+				
+			Jobs t = arrJobs[i];				
+			if ( t != null) {
+					
+				if ( nombre.equals(t.getUsuarioEncargado())) {
+						trabajos[i] = t;
+				}
+			}
+		}
+			
+		return trabajos;
+	}
+	 
+	 
+	 public void crearTrabajo(String nombreTrabajo, String usuario, String estado, int numDeCopias, String calidad, String fechaEntrada, String fechaTerminado, String fechaEntrega) 
+		{		
+			for (int i=0; i < arrJobs.length; i++) 
+			{	
+				if ( arrJobs[i] == null) 
+				{
+					arrJobs[i] = new Jobs(nombreTrabajo, usuario, estado, numDeCopias, calidad, fechaEntrada, fechaTerminado, fechaEntrega);
+				}
+				
+			}
+		}
+		
+		public Jobs leerTrabajo(String nombreTrabajo) {
+								
+			for (int i=0; i < arrJobs.length; i++) {
+				
+				Jobs t = arrJobs[i];
+				
+				if (t != null){
+					
+					if ( nombreTrabajo.equals(t.getNombreTrabajo())){	
+						return arrJobs[i];
+					}
+				}
+			}
+			
+			return null;	
+		}
+
+		public Jobs[] leerTrabajos() {
+			
+			int n = getCantidadTrabajos();
+
+			Jobs[] trabajos = new Jobs[n];
+			
+			for (int i=0; i < trabajos.length; i++) { trabajos[i] = null; } // llenamos el arreglo con valores null
+				
+			for (int i=0; i < arrJobs.length; i++) {
+				
+				Jobs t = arrJobs[i];
+				
+				if ( t != null){	
+					trabajos[i] = t;
+				}
+			}
+			
+			return trabajos;	
+		}
+
+		public Jobs[] leerTrabajos(String nombreUsuario, String estadoTrabajo) {
+			
+			if (nombreUsuario == null && estadoTrabajo != null){
+				
+			}else if(nombreUsuario != null && estadoTrabajo == null){
+				Jobs[] trabajos = new Jobs[20];
+			
+				for (int i=0; i < trabajos.length; i++) { trabajos[i] = null; } // llenamos el arreglo con valores null
+				
+				for (int i=0; i < arrJobs.length; i++) {
+				
+					Jobs t = arrJobs[i];
+				
+					if ( t != null){
+					
+						if ( nombreUsuario.equals(t.getUsuarioEncargado())) {	
+							trabajos[i] = t;
+						}
+					}
+				}
+				return trabajos;
+			}
+			else{
+
+			}
+
+			Jobs[] trabajos = new Jobs[arrJobs.length];
+			
+			for (int i=0; i < trabajos.length; i++) { trabajos[i] = null; } // llenamos el arreglo con valores null
+				
+			for (int i=0; i < arrJobs.length; i++) {
+				
+				Jobs t = arrJobs[i];
+				
+				if ( t != null) {
+					
+					if ( nombreUsuario.equals(t.getUsuarioEncargado()) && estadoTrabajo.equals(t.getStatus())) {
+						trabajos[i] = t;
+					}
+				}
+			}
+			
+			return trabajos;	
+		}
+		
+		public void actualizarTrabajo() {
+			
+		}
+		
+		public void eliminarTrabajo() {
+			
+		}
+		
+		private int getCantidadTrabajos(){
+
+			int cantidad = 0;
+
+			for (int i=0; i < arrJobs.length; i++){
+				
+				if (arrJobs[i] != null){
+					cantidad++;
+				}
+			}
+
+			return cantidad;
+		}
+	}
+}
