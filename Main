@@ -1,0 +1,14 @@
+package gui;
+
+
+public class Main {
+	
+	public static void main(String[] args) {			
+		
+		Login frmLogin = new Login();
+		frmLogin.setVisible(true);
+		
+		
+	}
+	
+}
